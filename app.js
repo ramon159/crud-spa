@@ -31,10 +31,13 @@ app.get('/', (req, res) => {
 
 app.post('/create', (req, res) => {
     const r = req.body
-    console.log(r)
+    console.log("insert: ",r)
     const {name, age} = r;
     sql.query('insert into user (name, age) values (?,?)', [name, age]);
-    res.json({name: name, age: age})
+    sql.query('SELECT * FROM user ORDER BY id DESC LIMIT 1', (err, results) => {
+        const id = results[0].id
+        res.json({id: id, name: name, age: age})
+    })
 })
 
 app.get('/read', (req, res) => {
@@ -44,11 +47,17 @@ app.get('/read', (req, res) => {
     })
 })
 
-app.post('/update', (req, res) => {})
+app.post('/update', (req, res) => {
+    const r = req.body;
+    const {id,name,age} = r;
+    sql.query('update user set name = ?, age = ? where id = ?', [name,age, id]);
+    console.log("update: ",r)
+    res.json({id: id, name: name, age: age})
+})
 
 app.post('/delete', (req, res) => {
     const r = req.body 
-    console.log(r)
+    console.log("delete: ",r)
     sql.query('delete from user where id = ?', [r.id])
     res.json({id: r.id})
 })
