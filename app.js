@@ -12,6 +12,7 @@ const sql = mysql.createConnection({
     database: 'crud',
 });
 
+
 app.engine('handlebars', handlebars({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 app.use(express.json());

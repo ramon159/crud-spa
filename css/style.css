@@ -1,0 +1,33 @@
+.createData {
+    width: 40%;
+    margin: auto;
+    padding-bottom: 10px;
+}
+
+table, td, th {
+    border: 1px solid #ddd;
+    text-align: center;
+}
+table {
+    border-collapse: collapse;
+    width: 50%;
+    margin: auto;
+}
+#view-container {
+    overflow-x: auto;
+    margin: auto;
+}
+
+.buttonEdit {
+    color: white;
+    background-color: black;
+    border: none;
+}
+.buttonDelete {
+    color: white;
+    background-color: red;
+    border: none;
+}
+ul {
+    list-style-type: none;
+}

@@ -11,48 +11,27 @@ const ajax = function (url, method, data, callback) {
             console.log(error);
         });
 };
-const ul = document.getElementById('viewData');
+const table = document.getElementById('viewData');
+
 const createElement = (id, name, age) => {
-    const li = document.createElement('li');
-    const labelName = document.createElement('label');
-    const labelAge = document.createElement('label');
-    const buttonEdit = document.createElement('button');
-    const buttonDelete = document.createElement('button');
-    const inputInnerName = document.createElement('input');
-    const inputInnerAge = document.createElement('input')
 
-    //attributes
-    buttonDelete.setAttribute('onclick', 'deleteData(this)');
-    buttonEdit.setAttribute('onclick', 'editElement(this)');
-    inputInnerName.setAttribute('class', 'inputInnerName')
-    inputInnerAge.setAttribute('class', 'inputInnerAge')
-    labelName.setAttribute('class', 'labelName')
-    labelAge.setAttribute('class', 'labelAge')
-
-    //text
-    buttonDelete.textContent = 'Delete';
-    buttonEdit.textContent = 'Edit';
-    labelName.textContent = name;
-    labelAge.textContent = age;
-
-    //styles
-    inputInnerName.style.display = 'none';
-    inputInnerAge.style.display = 'none';
-
-    //appends
-    li.appendChild(labelName);
-    li.appendChild(labelAge);
-    li.appendChild(inputInnerName);
-    li.appendChild(inputInnerAge);
-    li.appendChild(buttonEdit);
-    li.appendChild(buttonDelete);
-    li.id = id
-
-    if (ul.childNodes[0]){
-        ul.insertBefore(li, ul.childNodes[0]);
-    } else {
-        ul.appendChild(li)
-    }
+    const tr = `        
+        <tr id="${id}">
+            <td><input type="checkbox"></td>
+            <td class="name">${name}</td>
+            <td class="age">${age}</td>
+            <td>
+            <input class="inputName" style="visibility: hidden" value="${name}">
+            </td>
+            <td><input class="inputAge" style="visibility: hidden" value="${age}"></td>
+            <td>
+                <button onclick="editElement(this)" class="buttonEdit">Editar</button>
+                <button onclick="deleteData(this)" class="buttonDelete">Deletar</button>
+            </td>
+        </tr>
+        `
+    const tBody = table.querySelector("tbody");
+    tBody.innerHTML += tr;
 };
 const createData = (self) => {
     const inputName = document.getElementById('name').value;
@@ -74,7 +53,8 @@ const deleteElement = (self) => {
     self.remove();
 };
 const deleteData = (self) => {
-    ajax('/delete', 'POST', {id: self.parentNode.id}, (response) => {
+    const id = self.parentNode.parentNode.id;
+    ajax('/delete', 'POST', {id: id}, (response) => {
         deleteElement(document.getElementById(response.id))
     });
 };
@@ -90,26 +70,26 @@ const read = () => {
 read();
 
 const editElement = (self) => {
-    const li = self.parentNode;
-    const inputInnerAge = li.getElementsByClassName('inputInnerAge')[0]
-    const inputInnerName = li.getElementsByClassName('inputInnerName')[0]
-    const labelAge = li.getElementsByClassName('labelAge')[0]
-    const labelName = li.getElementsByClassName('labelName')[0]
-    const id = li.id
+    const tr = self.parentNode.parentNode;
+    const inputName = tr.getElementsByClassName('inputName')[0]
+    const inputAge = tr.getElementsByClassName('inputAge')[0]
+    const name = tr.getElementsByClassName('name')[0]
+    const age = tr.getElementsByClassName('age')[0]
 
-    if (inputInnerAge.style.display == 'none') {
-        inputInnerAge.value = labelAge.textContent
-        inputInnerName.value = labelName.textContent
-        inputInnerAge.style.display = 'inline';
-        inputInnerName.style.display = 'inline';
+    const display = (self, property) => {self.style.visibility = property}
+
+    if (inputAge.style.visibility === 'hidden') {
+        display(inputAge, 'visible')
+        display(inputName, 'visible')
     } else {
-        updateData(id, inputInnerName.value, inputInnerAge.value, (response) => {
-            labelAge.textContent = response.age;
-            labelName.textContent = response.name;
+        updateData(tr.id, inputName.value, inputAge.value, (response) => {
+            age.textContent = response.age;
+            name.textContent = response.name;
         })
-        inputInnerAge.style.display = 'none';
-        inputInnerName.style.display = 'none';     
+        display(inputName, 'hidden');
+        display(inputAge, 'hidden')
     }
+
 }
 const updateData = (id, name, age, callback) => {
     ajax('/update', 'POST', {id: id, name: name, age: age}, (response) => {
